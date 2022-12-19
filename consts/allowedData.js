@@ -6,8 +6,8 @@ const allowedCors = [
   'http://localhost:3000',
   'https://localhost:3000',
   'localhost:3000',
-  'http://nedvov.mesto.nomoredomains.club',
-  'https://nedvov.mesto.nomoredomains.club',
+  'http://nedvov.movies.nomoredomains.club',
+  'https://nedvov.movies.nomoredomains.club',
 ];
 
 module.exports = {
