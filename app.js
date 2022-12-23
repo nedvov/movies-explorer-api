@@ -2,22 +2,17 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 const router = require('./routes/index');
+const limiter = require('./middlewares/limitter');
 const { handleErrors } = require('./middlewares/handleErrors');
 const { handleCors } = require('./middlewares/handleCors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
-const { MONGO_URL } = process.env;
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-});
+const { MONGO_URL, NODE_ENV } = process.env;
 
 mongoose.set('strictQuery', true);
 
@@ -31,10 +26,11 @@ app.use(cookieParser());
 app.use(handleCors);
 
 app.use(requestLogger);
+app.use(limiter);
 app.use(router);
 app.use(errorLogger);
 
-mongoose.connect(MONGO_URL, {})
+mongoose.connect(NODE_ENV === 'production' ? MONGO_URL : 'mongodb://localhost:27017/moviesdevdb', {})
   .catch((err) => {
     console.log(err.message);
   });

@@ -5,6 +5,7 @@ const User = require('../models/user');
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
 const UniqueError = require('../errors/UniqueError');
+const { userErrors } = require('../consts/errorTexts');
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -29,7 +30,7 @@ module.exports.createUser = (req, res, next) => {
       if (err.code === 11000) {
         next(
           new UniqueError(
-            'Ошибка. Пользователь с таким email уже найден',
+            userErrors.userAlreadyRegister,
           ),
         );
       } else if (err.name === 'ValidationError') { next(new ValidationError(err.message)); } else next(err);
@@ -46,7 +47,7 @@ module.exports.updateMe = (req, res, next) => {
     { new: true, runValidators: true, upsert: false },
   )
     .orFail(
-      new NotFoundError('Ошибка. Запрашиваемый пользователь не найден'),
+      new NotFoundError(userErrors.userNotFound),
     )
     .then((user) => {
       res.send(user);
@@ -77,7 +78,7 @@ module.exports.getMe = (req, res, next) => {
 
   User.findById(userId)
     .orFail(
-      new NotFoundError('Ошибка. Запрашиваемый пользователь не найден'),
+      new NotFoundError(userErrors.userNotFound),
     )
     .then((user) => {
       res.send(user);

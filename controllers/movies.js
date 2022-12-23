@@ -2,6 +2,7 @@ const Movie = require('../models/movie');
 const NotFoundError = require('../errors/NotFoundError');
 const ForbiddenError = require('../errors/ForbiddenError');
 const ValidationError = require('../errors/ValidationError');
+const { moviesErrors } = require('../consts/errorTexts');
 
 module.exports.getMovies = (req, res, next) => {
   Movie.find({ owner: req.user._id })
@@ -50,13 +51,13 @@ module.exports.removeMovie = (req, res, next) => {
   const { movieId } = req.params;
   const userId = req.user._id;
   Movie.findById(movieId)
-    .orFail(new NotFoundError('Ошибка. Запрашиваемый фильм не найден'))
+    .orFail(new NotFoundError(moviesErrors.movieNotFound))
     .then((movie) => {
       if (movie.owner.toString() === userId) {
         Movie.findByIdAndRemove(movieId)
           .orFail(
             new NotFoundError(
-              'Ошибка. Запрашиваемый фильм не найден',
+              moviesErrors.movieNotFound,
             ),
           )
           .then((dmovie) => res.send(dmovie))
@@ -64,18 +65,18 @@ module.exports.removeMovie = (req, res, next) => {
             if (err.name === 'CastError') {
               next(
                 new ValidationError(
-                  'Передан некорректный идентификатор фильма',
+                  moviesErrors.movieWrongId,
                 ),
               );
             } else next(err);
           });
-      } else throw new ForbiddenError('Нельзя удалять чужие фильмы');
+      } else throw new ForbiddenError(moviesErrors.movieForeign);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(
           new ValidationError(
-            'Передан некорректный идентификатор фильма',
+            moviesErrors.movieWrongId,
           ),
         );
       } else next(err);
