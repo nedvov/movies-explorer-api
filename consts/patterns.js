@@ -11,7 +11,12 @@ const linkPattern = new RegExp('^(https?:\\/\\/)?' // protocol
 + '(\\?[;&a-z\\d%_.~+=-]*)?' // query string
 + '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
 
+const relativeLinkPattern = new RegExp('^(\\/[-a-z\\d%_.~+]*)*' // path
++ '(\\?[;&a-z\\d%_.~+=-]*)?' // query string
++ '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+
 module.exports = {
   emailPattern,
   linkPattern,
+  relativeLinkPattern,
 };

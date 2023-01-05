@@ -1,5 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
-const { linkPattern, emailPattern } = require('../consts/patterns');
+const { relativeLinkPattern, linkPattern, emailPattern } = require('../consts/patterns');
 
 const removeMovieValidator = celebrate({
   params: Joi.object().keys({
@@ -15,12 +15,18 @@ const createMovieValidator = celebrate({
     director: Joi.string().required(),
     year: Joi.string().required(),
     description: Joi.string().required(),
-    movieId: Joi.number().required(),
+    id: Joi.number().required(),
     trailerLink: Joi.string().required().pattern(linkPattern),
-    thumbnail: Joi.string().required().pattern(linkPattern),
-    image: Joi.string().required().pattern(linkPattern),
+    image: Joi.object().keys({
+      url: Joi.string().required().pattern(relativeLinkPattern),
+      formats: Joi.object().keys({
+        thumbnail: Joi.object().keys({
+          url: Joi.string().required().pattern(relativeLinkPattern),
+        }).unknown(true),
+      }).unknown(true),
+    }).unknown(true),
     duration: Joi.number().required(),
-  }),
+  }).unknown(true),
 });
 
 const updateMeValidator = celebrate({
